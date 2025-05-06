@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import Form from "../utils/form";
+import { Link } from "react-router-dom";
 
 const loginFields = [
   { label: "Email", name: "email", type: "email" },
@@ -7,6 +9,8 @@ const loginFields = [
 ];
 
 const Login = () => {
+  const navigate = useNavigate();  // Get the navigate function from useNavigate
+
   const handleLogin = async (data) => {
     try {
       const response = await axiosInstance.post("/api/auth/login", data);
@@ -15,8 +19,8 @@ const Login = () => {
       // Store the token in localStorage
       localStorage.setItem("token", response.data.token);
 
-      // Redirect to the homepage or dashboard
-      window.location.href = "/home";  // Adjust to your homepage route
+      // Redirect to the homepage after login
+      navigate("/");  // This redirects to the Home page
 
     } catch (error) {
       console.error("Login failed:", error.response?.data?.message || error.message);
@@ -25,8 +29,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-amber-100 via-amber-400 to-amber-600 p-4">
-      <div className="w-full  p-8 bg-white rounded-3xl shadow-xl border-2 border-gray-200">
+    <div className="flex justify-center mt-[1%] rounded-2xl items-center h-screen bg-gradient-to-r from-amber-100 via-amber-400 to-amber-600 p-4">
+      <div className="w-full max-w-md p-8 bg-white rounded-3xl shadow-xl border-2 border-gray-200">
         <h1 className="text-3xl font-extrabold text-center text-indigo-600 mb-6">
           Welcome Back to <span className="text-pink-500">Zing</span> ❤️
         </h1>
@@ -40,7 +44,7 @@ const Login = () => {
         />
         
         <div className="mt-6 text-center text-gray-700">
-          <p>Don&apos;t have an account? <a href="/signup" className="text-indigo-600 font-semibold hover:text-indigo-800">Sign Up</a></p>
+          <p>Don&apos;t have an account? <Link to="/register" className="text-indigo-600 font-semibold hover:text-indigo-800">Sign Up</Link></p>
         </div>
       </div>
     </div>

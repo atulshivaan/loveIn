@@ -1,71 +1,52 @@
 import { useState } from "react";
-import axiosInstance from "../utils/axiosInstance"; // Import the axiosInstance
-import InputField from "./inputfields";
 
-const Form = ({ fields, onSubmit, buttonText = "Submit", apiEndpoint, successMessage = "Form Submitted!" }) => {
-  const [formData, setFormData] = useState(
-    fields.reduce((acc, field) => {
-      acc[field.name] = "";
-      return acc;
-    }, {})
-  );
-  const [showToast, setShowToast] = useState(false);
-  const [error, setError] = useState(null); // For handling form errors
+const Form = ({ fields, buttonText, onSubmit, successMessage }) => {
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-  
-    if (Object.values(formData).some((value) => !value)) {
-      setError("All fields are required!");
-      return;
-    }
-  
+    setLoading(true);  // Show loading spinner
+
     try {
-      await onSubmit(formData); // Call parent's onSubmit
-      setFormData(fields.reduce((acc, field) => {
-        acc[field.name] = "";
-        return acc;
-      }, {}));
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      await onSubmit(formData);
+      setLoading(false);  // Hide loading spinner after submission
     } catch (error) {
-      setError(error.response?.data?.message || "Something went wrong!");
+      setLoading(false);  // Hide loading spinner if error occurs
     }
   };
-  
 
   return (
-    <div className="w-full px-8">
-      <form onSubmit={handleSubmit}>
-        {fields.map((field) => (
-          <InputField
-            key={field.name}
-            {...field}
-            value={formData[field.name]}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {fields.map((field) => (
+        <div key={field.name} className="relative">
+          <label className="block text-sm font-semibold">{field.label}</label>
+          <input
+            type={field.type}
+            name={field.name}
             onChange={handleChange}
+            className="w-full px-4 py-3 mt-2 border rounded-xl focus:ring-2 focus:ring-pink-500"
           />
-        ))}
-        {error && <div className="text-red-500 mt-2">{error}</div>}
-        <button
-  type="submit"
-  className="w-[30%] mx-[30%] bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 mt-4"
->
-  {buttonText}
-</button>
-      </form>
-
-      {/* Success Toast */}
-      {showToast && (
-        <div className="toast-message bg-pink-500 text-white p-2 rounded mt-4">
-          {successMessage}
         </div>
-      )}
-    </div>
+      ))}
+
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          disabled={loading}  // Disable button while loading
+          className={`w-full py-3 mt-4 bg-pink-500 text-white rounded-xl transition duration-300 transform ${loading ? 'cursor-wait opacity-50' : 'hover:opacity-80'}`}
+        >
+          {loading ? "Loading..." : buttonText}
+        </button>
+      </div>
+    </form>
   );
 };
 
