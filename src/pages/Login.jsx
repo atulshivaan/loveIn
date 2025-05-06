@@ -1,3 +1,4 @@
+import axiosInstance from "../utils/axiosInstance";
 import Form from "../utils/form";
 
 const loginFields = [
@@ -6,20 +7,41 @@ const loginFields = [
 ];
 
 const Login = () => {
-  const handleLogin = (data) => {
-    console.log("Login form submitted:", data);
+  const handleLogin = async (data) => {
+    try {
+      const response = await axiosInstance.post("/api/auth/login", data);
+      console.log("Login Successful:", response.data);
+
+      // Store the token in localStorage
+      localStorage.setItem("token", response.data.token);
+
+      // Redirect to the homepage or dashboard
+      window.location.href = "/home";  // Adjust to your homepage route
+
+    } catch (error) {
+      console.error("Login failed:", error.response?.data?.message || error.message);
+      // Show an error message to the user
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-blue-100">
-      <div className="w-full max-w-[600px] rounded-xl p-8 bg-gradient-to-r from-red-300 to-red-500">
-        <h1 className="text-white text-2xl font-bold mb-6">Log In</h1>
+    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-amber-100 via-amber-400 to-amber-600 p-4">
+      <div className="w-full  p-8 bg-white rounded-3xl shadow-xl border-2 border-gray-200">
+        <h1 className="text-3xl font-extrabold text-center text-indigo-600 mb-6">
+          Welcome Back to <span className="text-pink-500">Zing</span> ❤️
+        </h1>
+        <h2 className="text-xl text-gray-700 text-center mb-8">Log in to continue your journey of love</h2>
+
         <Form 
           fields={loginFields} 
           onSubmit={handleLogin} 
-          buttonText="Log In" 
-          successMessage="Login Successful!" // Custom success message
+          buttonText="Log In"
+          successMessage="Login Successful!" 
         />
+        
+        <div className="mt-6 text-center text-gray-700">
+          <p>Don&apos;t have an account? <a href="/signup" className="text-indigo-600 font-semibold hover:text-indigo-800">Sign Up</a></p>
+        </div>
       </div>
     </div>
   );

@@ -52,11 +52,11 @@ const Form = ({ fields, onSubmit, buttonText = "Submit", apiEndpoint, successMes
         ))}
         {error && <div className="text-red-500 mt-2">{error}</div>}
         <button
-          type="submit"
-          className="bg-white text-red-500 font-bold py-2 px-4 mt-4 rounded"
-        >
-          {buttonText}
-        </button>
+  type="submit"
+  className="w-[30%] mx-[30%] bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 mt-4"
+>
+  {buttonText}
+</button>
       </form>
 
       {/* Success Toast */}
